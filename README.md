@@ -34,9 +34,9 @@ Das Ziel ist es, eine **einfache Lösung zur Überwachung der Bodenfeuchtigkeit*
 
 ## Autoren
 
-Berke Poslu
-Oliver Zenger
-Bruno Varrese
+- Berke Poslu
+- Oliver Zenger
+- Bruno Varrese
 
 ---
 
