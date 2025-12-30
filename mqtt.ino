@@ -6,18 +6,7 @@
   //-------------------------------------------------------------------
   #include <WiFi.h>
   #include <MQTT.h>
-
-  //-------------------------------------------------------------------
-  // WiFi:
-  #define WIFI_SSID  "bruphone"  /* to change */
-  #define WIFI_KEY   "12345678"  /* to change */
-
-  //-------------------------------------------------------------------
-  #define MQTT_CLIENT_ID  "BBW_ESP32_BV"  /* to change */
-
-  #define MQTT_BROKER_URL            "public.cloud.shiftr.io"
-  #define MQTT_BROKER_USER_NAME      "public"
-  #define MQTT_BROKER_USER_PASSWORD  "public"
+  #include "config.h"
 
   //-------------------------------------------------------------------
   WiFiClient wifinetwork;
@@ -30,7 +19,7 @@
     Serial.begin(115200);
 
     //---
-    WiFi.begin(WIFI_SSID, WIFI_KEY);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     Serial.print("Connecting to network ");
 
     while (WiFi.status() != WL_CONNECTED) {
@@ -45,7 +34,7 @@
     mqttclient.setHost(MQTT_BROKER_URL);
     Serial.print("Connecting to MQTT broker ");
 
-    while (mqttclient.connect(MQTT_CLIENT_ID, MQTT_BROKER_USER_NAME, MQTT_BROKER_USER_PASSWORD) == false) {
+    while (mqttclient.connect(MQTT_CLIENT_ID, MQTT_BROKER_USER, MQTT_BROKER_PASSWORD) == false) {
       Serial.print(".");
       delay(250);
     }
@@ -65,8 +54,8 @@
     if ((millis() - zeitStempel) > 1000) {
       zeitStempel = millis();
 
-      String topic = "AAAA/BBBB/TEXT";  /* to change */
-      String payload = "Hello World";   /* to change */
+      String topic = MQTT_TOPIC;
+      String payload = "Hello World";
       mqttclient.publish(topic, payload);
 
       Serial.println("Message published :-)");

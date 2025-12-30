@@ -1,8 +1,4 @@
-const int soilSensorPin = 2; // ADC-Pin auf Nano C6
-
-// Kalibrierungswerte
-const int dryValue = 3500;  // Sensor in Luft
-const int wetValue = 1000;  // Sensor in Wasser
+#include "config.h"
 
 void setup() {
   Serial.begin(115200);
@@ -10,9 +6,8 @@ void setup() {
 }
 
 void loop() {
-  int sensorValue = analogRead(soilSensorPin);
-
-  int moisturePercent = map(sensorValue, dryValue, wetValue, 0, 100);
+  int sensorValue = analogRead(SOIL_SENSOR_PIN);
+  int moisturePercent = 100L * (SOIL_DRY_VALUE - sensorValue) / (SOIL_DRY_VALUE - SOIL_WET_VALUE);
   moisturePercent = constrain(moisturePercent, 0, 100);
 
   Serial.print("Rohwert: ");
@@ -21,5 +16,5 @@ void loop() {
   Serial.print(moisturePercent);
   Serial.println(" %");
 
-  delay(1000);
+  delay(MEASURE_INTERVAL_MS);
 }

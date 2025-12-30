@@ -1,30 +1,6 @@
 #include <WiFi.h>
 #include <MQTT.h>
-
-// ========== CONFIGURATION ==========
-
-// WiFi credentials
-#define WIFI_SSID "bruphone"
-#define WIFI_PASSWORD "12345678"
-
-// MQTT broker configuration
-#define MQTT_CLIENT_ID "BBW_ESP32_BV"
-#define MQTT_BROKER_URL "public.cloud.shiftr.io"
-#define MQTT_BROKER_USER "public"
-#define MQTT_BROKER_PASSWORD "public"
-#define MQTT_TOPIC "BBW/SoilMoisture"
-
-// Sensor configuration
-const int soilSensorPin = 1;
-const int dryValue = 3900; 
-const int wetValue = 1200;
-
-// Thresholds for classification
-const int THRESHOLD_DRY = 20;      // below 20% = "dry"
-const int THRESHOLD_CRITICAL = 35; // 20-35% = "critical", above = "ok"
-
-// Measurement interval
-const unsigned long MEASURE_INTERVAL_MS = 1000; // 1 second
+#include "config.h"
 
 // ========== GLOBAL VARIABLES ==========
 
@@ -34,7 +10,8 @@ unsigned long lastMeasurement = 0;
 
 // ========== SETUP ==========
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   delay(1000);
 
@@ -53,23 +30,27 @@ void setup() {
 
 // ========== MAIN LOOP ==========
 
-void loop() {
+void loop()
+{
   // Update MQTT client
   mqttClient.loop();
 
   // Check connections and reconnect if necessary
-  if (WiFi.status() != WL_CONNECTED) {
+  if (WiFi.status() != WL_CONNECTED)
+  {
     Serial.println("WiFi connection lost! Reconnecting...");
     connectWiFi();
   }
 
-  if (!mqttClient.connected()) {
+  if (!mqttClient.connected())
+  {
     Serial.println("MQTT connection lost! Reconnecting...");
     connectMQTT();
   }
 
   // Perform measurements at defined interval
-  if (millis() - lastMeasurement >= MEASURE_INTERVAL_MS) {
+  if (millis() - lastMeasurement >= MEASURE_INTERVAL_MS)
+  {
     lastMeasurement = millis();
     publishMoisture();
   }
@@ -77,7 +58,8 @@ void loop() {
 
 // ========== WIFI CONNECTION ==========
 
-void connectWiFi() {
+void connectWiFi()
+{
   Serial.println();
   Serial.print("Connecting to WiFi: ");
   Serial.println(WIFI_SSID);
@@ -85,12 +67,14 @@ void connectWiFi() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     delay(500);
     Serial.print(".");
     attempts++;
 
-    if (attempts > 60) { // 30 seconds timeout
+    if (attempts > 60)
+    { // 30 seconds timeout
       Serial.println();
       Serial.println("ERROR: WiFi connection failed!");
       Serial.println("Retrying in 5 seconds...");
@@ -110,7 +94,8 @@ void connectWiFi() {
 
 // ========== MQTT CONNECTION ==========
 
-void connectMQTT() {
+void connectMQTT()
+{
   Serial.println();
   Serial.print("Connecting to MQTT broker: ");
   Serial.println(MQTT_BROKER_URL);
@@ -118,12 +103,14 @@ void connectMQTT() {
   mqttClient.begin(MQTT_BROKER_URL, wifiNetwork);
 
   int attempts = 0;
-  while (!mqttClient.connect(MQTT_CLIENT_ID, MQTT_BROKER_USER, MQTT_BROKER_PASSWORD)) {
+  while (!mqttClient.connect(MQTT_CLIENT_ID, MQTT_BROKER_USER, MQTT_BROKER_PASSWORD))
+  {
     Serial.print(".");
     delay(500);
     attempts++;
 
-    if (attempts > 40) { // 20 seconds timeout
+    if (attempts > 40)
+    { // 20 seconds timeout
       Serial.println();
       Serial.println("ERROR: MQTT connection failed!");
       Serial.println("Retrying in 5 seconds...");
@@ -141,26 +128,33 @@ void connectMQTT() {
 
 // ========== SENSOR FUNCTIONS ==========
 
-String classifyMoisture(int percent) {
-  if (percent < THRESHOLD_DRY) {
+String classifyMoisture(int percent)
+{
+  if (percent < THRESHOLD_DRY)
+  {
     return "dry";
-  } else if (percent < THRESHOLD_CRITICAL) {
+  }
+  else if (percent < THRESHOLD_CRITICAL)
+  {
     return "critical";
-  } else {
+  }
+  else
+  {
     return "ok";
   }
 }
 
 // ========== MQTT PUBLISH ==========
 
-void publishMoisture() {
+void publishMoisture()
+{
   // Read sensor
-  int sensorValue = analogRead(soilSensorPin);
- 
+  int sensorValue = analogRead(SOIL_SENSOR_PIN);
+
   // Calculate moisture percentage
-  int moisturePercent = 100L * (dryValue - sensorValue) / (dryValue - wetValue);
+  int moisturePercent = 100L * (SOIL_DRY_VALUE - sensorValue) / (SOIL_DRY_VALUE - SOIL_WET_VALUE);
   moisturePercent = constrain(moisturePercent, 0, 100);
-  
+
   // Classify moisture level
   String state = classifyMoisture(moisturePercent);
 
