@@ -1,11 +1,14 @@
+#include <Arduino.h>
 #include "config.h"
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   Serial.println("Nano C6 - Soil Moisture Test");
 }
 
-void loop() {
+void loop()
+{
   int sensorValue = analogRead(SOIL_SENSOR_PIN);
   int moisturePercent = 100L * (SOIL_DRY_VALUE - sensorValue) / (SOIL_DRY_VALUE - SOIL_WET_VALUE);
   moisturePercent = constrain(moisturePercent, 0, 100);
