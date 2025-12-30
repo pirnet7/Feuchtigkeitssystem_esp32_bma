@@ -173,9 +173,9 @@ void publishMoisture()
   // Debug output
   Serial.println();
   Serial.println("--- New Measurement ---");
-  Serial.print("Rohwert: ");
+  Serial.print("Raw value: ");
   Serial.print(sensorValue);
-  Serial.print("\tFeuchtigkeit: ");
+  Serial.print("\tMoisture: ");
   Serial.print(moisturePercent);
   Serial.println(" %");
   Serial.print("Status: ");

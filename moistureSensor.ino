@@ -13,9 +13,9 @@ void loop()
   int moisturePercent = 100L * (SOIL_DRY_VALUE - sensorValue) / (SOIL_DRY_VALUE - SOIL_WET_VALUE);
   moisturePercent = constrain(moisturePercent, 0, 100);
 
-  Serial.print("Rohwert: ");
+  Serial.print("Raw value: ");
   Serial.print(sensorValue);
-  Serial.print("\tFeuchtigkeit: ");
+  Serial.print("\tMoisture: ");
   Serial.print(moisturePercent);
   Serial.println(" %");
 

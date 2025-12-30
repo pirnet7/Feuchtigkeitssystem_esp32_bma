@@ -46,9 +46,8 @@ void setup(void)
 //-------------------------------------------------------------------
 void loop(void)
 {
-  static uint32_t zeitStempel = 0;
+  static unsigned long lastPublish = 0;
 
-  //---
   mqttclient.loop();
 
   //--- Reconnect bei Verbindungsverlust
@@ -77,9 +76,9 @@ void loop(void)
 
   //---
   // T=1000ms (1 Hz)
-  if ((millis() - zeitStempel) > 1000)
+  if ((millis() - lastPublish) > 1000)
   {
-    zeitStempel = millis();
+    lastPublish = millis();
 
     String topic = MQTT_TOPIC;
     String payload = "Hello World";
