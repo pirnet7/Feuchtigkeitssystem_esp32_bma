@@ -1,8 +1,14 @@
-// MQTT publish
+// ========================================
+// BEISPIEL / TEST FILE
+// ========================================
+// Diese Datei dient nur zu Testzwecken.
+// Für das Produktivsystem verwende: moisturePublisher.ino
+//
+// MQTT publish example
 //
 // mqtt lib:      https://github.com/256dpi/arduino-mqtt
 // mqtt provider: https://www.shiftr.io/try/
-
+//
 //-------------------------------------------------------------------
 #include <WiFi.h>
 #include <MQTT.h>
