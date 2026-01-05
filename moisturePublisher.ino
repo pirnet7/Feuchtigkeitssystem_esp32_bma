@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <MQTT.h>
+#include <time.h>
 #include "config.h"
 
 // ========== GLOBAL VARIABLES ==========
@@ -7,6 +8,25 @@
 WiFiClient wifiNetwork;
 MQTTClient mqttClient(256);
 unsigned long lastMeasurement = 0;
+
+// ========== TIME CONFIG ==========
+const char *NTP_SERVER = "pool.ntp.org";
+const long GMT_OFFSET_SEC = 3600;     // UTC+1 (MEZ)
+const int DAYLIGHT_OFFSET_SEC = 3600; // Sommerzeit
+
+// ========== HELPER FUNCTION ==========
+String getCurrentDateTime()
+{
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo))
+  {
+    return "Zeit nicht verfügbar";
+  }
+
+  char buffer[25];
+  strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
+  return String(buffer);
+}
 
 // ========== SETUP ==========
 
@@ -22,6 +42,12 @@ void setup()
 
   // Establish connections
   connectWiFi();
+
+  // --- NTP TIME SYNC ---
+  configTime(GMT_OFFSET_SEC, DAYLIGHT_OFFSET_SEC, NTP_SERVER);
+  Serial.println("Zeit wird synchronisiert...");
+  delay(2000);
+
   connectMQTT();
 
   Serial.println("System ready!");
@@ -173,6 +199,8 @@ void publishMoisture()
   // Debug output
   Serial.println();
   Serial.println("--- New Measurement ---");
+  Serial.print("Datum/Uhrzeit: ");
+  Serial.println(getCurrentDateTime());
   Serial.print("Raw value: ");
   Serial.print(sensorValue);
   Serial.print("\tMoisture: ");
